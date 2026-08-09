@@ -1,0 +1,109 @@
+{% comment %}
+  Full-width editorial hero: a 2:3 image, a stark minimalist title, and a
+  quiet, borderless text button. No badges, no boxed CTAs.
+{% endcomment %}
+
+<div class="editorial-hero full-width">
+  <div class="editorial-hero__media">
+    {% render 'image',
+      class: 'editorial-hero__image',
+      image: section.settings.image,
+      width: 1600,
+      height: 2400,
+      crop: 'center'
+    %}
+  </div>
+
+  <div class="editorial-hero__content">
+    {% if section.settings.title != blank %}
+      <h1 class="editorial-hero__title">{{ section.settings.title }}</h1>
+    {% endif %}
+
+    {% if section.settings.button_label != blank %}
+      <a href="{{ section.settings.button_url | default: '#' }}" class="editorial-hero__button">
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .editorial-hero__media {
+    width: 100%;
+    aspect-ratio: var(--aspect-ratio-media);
+    overflow: hidden;
+  }
+
+  .editorial-hero__image {
+    aspect-ratio: var(--aspect-ratio-media);
+  }
+
+  .editorial-hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    max-width: 40ch;
+    padding: 3rem 0;
+  }
+
+  .editorial-hero__title {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: var(--font-primary--weight);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .editorial-hero__button {
+    display: inline-block;
+    font-size: var(--font-size-base);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-foreground);
+    border: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+  }
+
+  .editorial-hero__button:hover {
+    opacity: 1;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.editorial_hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.image"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:labels.title",
+      "default": "New season"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:labels.button_label",
+      "default": "Explore collection"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "t:labels.button_link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.editorial_hero"
+    }
+  ]
+}
+{% endschema %}

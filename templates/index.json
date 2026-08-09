@@ -9,12 +9,22 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "editorial-hero": {
+      "type": "editorial-hero",
+      "settings": {
+        "title": "New season",
+        "button_label": "Explore collection"
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Featured collection"
+      }
     }
   },
   "order": [
-    "main"
+    "editorial-hero",
+    "featured-collection"
   ]
 }
