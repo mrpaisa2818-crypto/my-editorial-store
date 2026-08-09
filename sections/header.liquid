@@ -282,19 +282,21 @@
           "info": "t:labels.menu_item_title_info"
         },
         {
-          "type": "image_picker",
-          "id": "image",
-          "label": "t:labels.featured_image"
+          "type": "product",
+          "id": "featured_product",
+          "label": "t:labels.featured_product",
+          "info": "t:labels.featured_product_info"
         },
         {
-          "type": "url",
-          "id": "image_url",
-          "label": "t:labels.featured_link"
-        },
-        {
-          "type": "text",
-          "id": "image_heading",
-          "label": "t:labels.featured_heading"
+          "type": "select",
+          "id": "featured_badge",
+          "label": "t:labels.featured_badge",
+          "options": [
+            { "value": "", "label": "t:options.featured_badge.none" },
+            { "value": "featured", "label": "t:options.featured_badge.featured" },
+            { "value": "capsule_selection", "label": "t:options.featured_badge.capsule_selection" }
+          ],
+          "default": ""
         }
       ]
     }

@@ -2,10 +2,11 @@
   Renders a full-width mega menu panel for a top-level navigation link.
 
   Splits the link's nested links into up to 3 text columns, plus an
-  optional 4th column with a 2:3 featured media card.
+  optional 4th column with a 2:3 featured product card. When the block
+  provides no product, a placeholder graphic is shown instead.
 
   @param {object} link - A top-level link from a linklist, with nested `link.links`
-  @param {object} [media_block] - An optional section block providing the featured card (image, image_url, image_heading settings)
+  @param {object} [media_block] - An optional section block providing the featured product (featured_product, featured_badge settings)
 
   @example
   {% render 'header-mega-menu', link: link, media_block: media_block %}
@@ -16,6 +17,9 @@
   assign column_count = 3
   assign links_per_column = sub_links.size | divided_by: column_count | ceil
   assign links_per_column = links_per_column | at_least: 1
+
+  assign featured_product = media_block.settings.featured_product
+  assign featured_badge = media_block.settings.featured_badge
 %}
 
 <div class="mega-menu">
@@ -35,20 +39,37 @@
       </div>
     {% endfor %}
 
-    <div class="mega-menu__featured">
-      {% if media_block %}
-        {% render 'image',
-          image: media_block.settings.image,
-          url: media_block.settings.image_url,
-          class: 'mega-menu__featured-image'
-        %}
-        {% if media_block.settings.image_heading != blank %}
-          <a href="{{ media_block.settings.image_url | default: link.url }}" class="mega-menu__link mega-menu__featured-heading">
-            {{ media_block.settings.image_heading }}
-          </a>
+    {% if media_block %}
+      <div class="mega-menu__featured">
+        {% if featured_badge != blank %}
+          <span class="mega-menu__featured-badge">
+            {% case featured_badge %}
+              {% when 'featured' %}
+                {{ 'header.mega_menu.badge.featured' | t }}
+              {% when 'capsule_selection' %}
+                {{ 'header.mega_menu.badge.capsule_selection' | t }}
+            {% endcase %}
+          </span>
         {% endif %}
-      {% endif %}
-    </div>
+
+        <a href="{{ featured_product.url | default: link.url }}" class="mega-menu__featured-card">
+          <span class="mega-menu__featured-image">
+            {% if featured_product != blank %}
+              {{ featured_product.featured_image | image_url: width: 560 | image_tag: sizes: '280px', widths: '280, 560' }}
+            {% else %}
+              {{ 'product' | placeholder_svg_tag: 'mega-menu__featured-placeholder' }}
+            {% endif %}
+          </span>
+
+          {% if featured_product != blank %}
+            <span class="mega-menu__featured-meta">
+              <span class="mega-menu__featured-title">{{ featured_product.title }}</span>
+              <span class="mega-menu__featured-price">{{ featured_product.price | money }}</span>
+            </span>
+          {% endif %}
+        </a>
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -80,11 +101,13 @@
 
   .mega-menu__grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) minmax(280px, 1fr);
-    gap: 4rem;
+    grid-template-columns: repeat(3, 1fr) 280px;
+    gap: 3rem;
+    align-items: start;
+    padding: 2.5rem 3rem;
     max-width: var(--page-width);
     margin: 0 auto;
-    padding: 4rem var(--page-margin);
+    border: none;
   }
 
   .mega-menu__column {
@@ -105,18 +128,60 @@
   .mega-menu__featured {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 1rem;
-    justify-self: end;
     width: 100%;
+  }
+
+  .mega-menu__featured-badge {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    color: #666666;
+  }
+
+  .mega-menu__featured .mega-menu__featured-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
   }
 
   .mega-menu__featured-image {
+    display: block;
     width: 100%;
     aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: #F8F8F8;
   }
 
-  .mega-menu__featured-heading {
-    text-align: right;
+  .mega-menu__featured-image img,
+  .mega-menu__featured-image svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mega-menu__featured-meta {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 0.75rem;
+  }
+
+  .mega-menu__featured-title {
+    display: block;
+  }
+
+  .mega-menu__featured-price {
+    display: block;
+    margin-top: 0.25rem;
+    color: #666666;
   }
 {% endstylesheet %}

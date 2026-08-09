@@ -65,6 +65,9 @@
     "featured_image": "Featured image",
     "featured_link": "Featured link",
     "featured_heading": "Featured heading",
+    "featured_product": "Featured product",
+    "featured_product_info": "Shown in the mega menu dropdown for this menu item. A placeholder is shown when no product is selected.",
+    "featured_badge": "Featured badge",
     "image": "Image",
     "title": "Title",
     "button_label": "Button label",
@@ -104,6 +107,11 @@
     "text_color": {
       "dark": "Dark (black)",
       "light": "Light (white)"
+    },
+    "featured_badge": {
+      "none": "None",
+      "featured": "Featured",
+      "capsule_selection": "Capsule selection"
     }
   }
 }

@@ -65,6 +65,14 @@
       "close_menu": "Close menu"
     }
   },
+  "header": {
+    "mega_menu": {
+      "badge": {
+        "featured": "Featured",
+        "capsule_selection": "Capsule selection"
+      }
+    }
+  },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
     "card": "Gift card",
