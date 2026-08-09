@@ -57,7 +57,7 @@
             {% if featured_product != blank %}
               {{ featured_product.featured_image | image_url: width: 560 | image_tag: sizes: '280px', widths: '280, 560' }}
             {% else %}
-              {{ 'product' | placeholder_svg_tag: 'mega-menu__featured-placeholder' }}
+              {{ 'product-1' | placeholder_svg_tag: 'mega-menu__featured-placeholder' }}
             {% endif %}
           </span>
 
