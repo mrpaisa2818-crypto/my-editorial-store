@@ -79,7 +79,10 @@
     "page_width": "Page width",
     "show_payment_icons": "Show payment icons",
     "text_style": "Text style",
-    "text": "Text"
+    "text": "Text",
+    "size_guide": "Size guide",
+    "fabrication_care": "Fabrication & care",
+    "shipping_returns": "Shipping & returns"
   },
   "options": {
     "alignment": {

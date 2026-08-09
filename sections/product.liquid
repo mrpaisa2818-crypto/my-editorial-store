@@ -1,50 +1,387 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+  Toteme-style editorial product page: a scrolling 2:3 image gallery on the
+  left and a sticky buy box on the right, with collapsible accordions for
+  size guide, fabrication & care, and shipping & returns below the
+  description.
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+{% liquid
+  assign current_variant = product.selected_or_first_available_variant
+%}
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+<div class="main-product">
+  <div class="main-product__gallery">
+    {% for image in product.images %}
+      {% render 'image', class: 'main-product__image', image: image, width: 1200 %}
+    {% else %}
+      <div class="main-product__image image">
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {% endfor %}
+  </div>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+  <div class="main-product__details">
+    <h1 class="main-product__title">{{ product.title }}</h1>
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
+    <p class="main-product__price" data-main-product-price data-currency="{{ cart.currency.iso_code }}">
+      {{ current_variant.price | money }}
+    </p>
+
+    {% form 'product', product, class: 'main-product__form' %}
+      <script type="application/json" data-main-product-variants>
+        {{ product.variants | json }}
+      </script>
+
+      {% unless product.has_only_default_variant %}
+        {% for option in product.options_with_values %}
+          <div class="main-product__option">
+            <label class="main-product__option-label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+              {{ option.name }}
+            </label>
+            <select
+              class="main-product__option-select"
+              id="Option-{{ section.id }}-{{ forloop.index0 }}"
+              name="option-{{ forloop.index0 }}"
+              data-option-index="{{ forloop.index0 }}"
+            >
+              {% for value in option.values %}
+                <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>
+                  {{ value }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endfor %}
+      {% endunless %}
+
+      <input type="hidden" name="id" value="{{ current_variant.id }}" data-main-product-variant-id>
+
+      <div class="main-product__quantity">
+        <label class="main-product__quantity-label" for="Quantity-{{ section.id }}">
+          {{ 'products.quantity' | t }}
+        </label>
+        <input
+          type="number"
+          id="Quantity-{{ section.id }}"
+          class="main-product__quantity-input"
+          name="quantity"
+          min="1"
+          value="1"
         >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+      </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+      <button
+        type="submit"
+        class="main-product__submit"
+        data-main-product-submit
+        {% unless current_variant.available %}
+          disabled="disabled"
+        {% endunless %}
+      >
+        <span
+          data-main-product-submit-text
+          data-add-to-cart-text="{{ 'products.add_to_cart' | t }}"
+          data-sold-out-text="{{ 'products.sold_out' | t }}"
+          data-unavailable-text="{{ 'products.unavailable' | t }}"
+        >
+          {% if current_variant.available %}
+            {{ 'products.add_to_cart' | t }}
+          {% else %}
+            {{ 'products.sold_out' | t }}
+          {% endif %}
+        </span>
+      </button>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
+      <div class="main-product__payment-button">
+        {{ form | payment_button }}
+      </div>
+    {% endform %}
+
+    {% if product.description != blank %}
+      <div class="main-product__description">
+        {{ product.description }}
+      </div>
+    {% endif %}
+
+    <div class="main-product__accordions">
+      {% if section.settings.size_guide_content != blank %}
+        <details class="main-product__accordion">
+          <summary class="main-product__accordion-header">{{ 'sections.main_product.size_guide' | t }}</summary>
+          <div class="main-product__accordion-content">{{ section.settings.size_guide_content }}</div>
+        </details>
+      {% endif %}
+
+      {% if section.settings.fabrication_care_content != blank %}
+        <details class="main-product__accordion">
+          <summary class="main-product__accordion-header">{{ 'sections.main_product.fabrication_care' | t }}</summary>
+          <div class="main-product__accordion-content">{{ section.settings.fabrication_care_content }}</div>
+        </details>
+      {% endif %}
+
+      {% if section.settings.shipping_returns_content != blank %}
+        <details class="main-product__accordion">
+          <summary class="main-product__accordion-header">{{ 'sections.main_product.shipping_returns' | t }}</summary>
+          <div class="main-product__accordion-content">{{ section.settings.shipping_returns_content }}</div>
+        </details>
+      {% endif %}
+    </div>
+  </div>
 </div>
+
+{% stylesheet %}
+  .main-product {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 4rem;
+    align-items: start;
+    padding: 2rem 0 6rem;
+  }
+
+  @media (max-width: 989px) {
+    .main-product {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 1rem 0 3rem;
+    }
+  }
+
+  .main-product__gallery {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-product__image {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    background: #f8f8f8;
+  }
+
+  .main-product__image:last-child {
+    margin-bottom: 0;
+  }
+
+  .main-product__details {
+    position: sticky;
+    top: 120px;
+  }
+
+  @media (max-width: 989px) {
+    .main-product__details {
+      position: static;
+      top: auto;
+    }
+  }
+
+  .main-product__title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .main-product__price {
+    font-size: 14px;
+    font-weight: 400;
+    color: #111111;
+    margin-bottom: 1.5rem;
+  }
+
+  .main-product__form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-product__option {
+    margin-bottom: 1.25rem;
+  }
+
+  .main-product__option-label,
+  .main-product__quantity-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .main-product__option-select,
+  .main-product__quantity-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 0.75em;
+    border: 1px solid #e5e5e5;
+    border-radius: 0;
+    background-color: var(--color-white);
+  }
+
+  .main-product__quantity {
+    margin-bottom: 1.25rem;
+    max-width: 100px;
+  }
+
+  .main-product__submit {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 0;
+    background-color: #000000;
+    color: var(--color-white);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    padding: 0;
+  }
+
+  .main-product__submit:hover:not(:disabled) {
+    background-color: #222222;
+    color: var(--color-white);
+  }
+
+  .main-product__submit:disabled {
+    background-color: var(--color-slate-400);
+    cursor: not-allowed;
+  }
+
+  .main-product__payment-button {
+    width: 100%;
+    margin-top: 0.75rem;
+    overflow: hidden;
+  }
+
+  .main-product__description {
+    margin-top: 2rem;
+    font-size: 14px;
+    line-height: var(--line-height-base);
+  }
+
+  .main-product__accordions {
+    margin-top: 2rem;
+  }
+
+  .main-product__accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .main-product__accordion-header::-webkit-details-marker {
+    display: none;
+  }
+
+  .main-product__accordion-header::after {
+    content: "+";
+    font-size: 14px;
+  }
+
+  .main-product__accordion[open] .main-product__accordion-header::after {
+    content: "\2212";
+  }
+
+  .main-product__accordion-content {
+    padding: 1rem 0;
+    font-size: 12px;
+    line-height: var(--line-height-base);
+    color: var(--color-slate-600);
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  function formatMoney(cents, currency) {
+    try {
+      return new Intl.NumberFormat(document.documentElement.lang || undefined, {
+        style: 'currency',
+        currency: currency,
+      }).format(cents / 100);
+    } catch (error) {
+      return (cents / 100).toFixed(2);
+    }
+  }
+
+  document.querySelectorAll('.main-product__form').forEach(function (form) {
+    var variantsScript = form.querySelector('[data-main-product-variants]');
+    if (!variantsScript) return;
+
+    var variants = JSON.parse(variantsScript.textContent);
+    var optionSelects = Array.from(form.querySelectorAll('[data-option-index]'));
+    var variantIdInput = form.querySelector('[data-main-product-variant-id]');
+    var submitButton = form.querySelector('[data-main-product-submit]');
+    var submitText = form.querySelector('[data-main-product-submit-text]');
+    var priceEl = form.closest('.main-product__details').querySelector('[data-main-product-price]');
+
+    function findMatchingVariant() {
+      var selected = optionSelects
+        .slice()
+        .sort(function (a, b) {
+          return a.dataset.optionIndex - b.dataset.optionIndex;
+        })
+        .map(function (select) {
+          return select.value;
+        });
+
+      return variants.find(function (variant) {
+        return selected.every(function (value, index) {
+          return variant.options[index] === value;
+        });
+      });
+    }
+
+    function updateUI() {
+      var variant = findMatchingVariant();
+
+      if (!variant) {
+        submitButton.setAttribute('disabled', 'disabled');
+        submitText.textContent = submitText.dataset.unavailableText;
+        return;
+      }
+
+      variantIdInput.value = variant.id;
+
+      if (priceEl) {
+        priceEl.textContent = formatMoney(variant.price, priceEl.dataset.currency);
+      }
+
+      if (variant.available) {
+        submitButton.removeAttribute('disabled');
+        submitText.textContent = submitText.dataset.addToCartText;
+      } else {
+        submitButton.setAttribute('disabled', 'disabled');
+        submitText.textContent = submitText.dataset.soldOutText;
+      }
+    }
+
+    optionSelects.forEach(function (select) {
+      select.addEventListener('change', updateUI);
+    });
+  });
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.product",
-  "settings": [],
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "size_guide_content",
+      "label": "t:labels.size_guide"
+    },
+    {
+      "type": "richtext",
+      "id": "fabrication_care_content",
+      "label": "t:labels.fabrication_care"
+    },
+    {
+      "type": "richtext",
+      "id": "shipping_returns_content",
+      "label": "t:labels.shipping_returns"
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

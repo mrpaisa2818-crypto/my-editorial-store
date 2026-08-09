@@ -85,6 +85,12 @@
     "password": "Password",
     "enter": "Enter"
   },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "quantity": "Quantity"
+  },
   "search": {
     "title": "Search",
     "close": "Close",
@@ -96,6 +102,11 @@
   "sections": {
     "featured_collection": {
       "select_collection": "Select a collection to display products."
+    },
+    "main_product": {
+      "size_guide": "Size guide",
+      "fabrication_care": "Fabrication & care",
+      "shipping_returns": "Shipping & returns"
     }
   }
 }
