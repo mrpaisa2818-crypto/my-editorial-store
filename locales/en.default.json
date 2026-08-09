@@ -59,7 +59,11 @@
     "title": "Collections"
   },
   "general": {
-    "brand_name": "Bellem"
+    "brand_name": "Bellem",
+    "accessibility": {
+      "menu": "Menu",
+      "close_menu": "Close menu"
+    }
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",

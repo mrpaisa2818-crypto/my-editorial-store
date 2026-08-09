@@ -57,6 +57,9 @@
     "studio_menu": "Studio menu",
     "legal_menu": "Legal menu",
     "customer_account_menu": "Customer account menu",
+    "transparent_header": "Transparent header",
+    "transparent_header_info": "Overlays the header on top of the first section, with a transparent background",
+    "header_text_color": "Header text color",
     "menu_item_title": "Matching menu item title",
     "menu_item_title_info": "Must exactly match the title of a top-level menu item that has sub-links",
     "featured_image": "Featured image",
@@ -97,6 +100,10 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
+    },
+    "text_color": {
+      "dark": "Dark (black)",
+      "light": "Light (white)"
     }
   }
 }
