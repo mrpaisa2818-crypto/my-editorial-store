@@ -1,0 +1,1 @@
+C:/Users/drive/my-editorial-store/AGENTS.md
