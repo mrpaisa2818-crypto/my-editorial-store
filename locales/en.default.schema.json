@@ -45,6 +45,8 @@
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
     "menu": "Menu",
+    "studio_menu": "Studio menu",
+    "legal_menu": "Legal menu",
     "customer_account_menu": "Customer account menu",
     "menu_item_title": "Matching menu item title",
     "menu_item_title_info": "Must exactly match the title of a top-level menu item that has sub-links",

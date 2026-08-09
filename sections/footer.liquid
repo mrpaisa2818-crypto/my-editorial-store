@@ -1,39 +1,213 @@
 <footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+  <div class="footer__column">
+    <h3 class="footer__heading">{{ 'footer.studio.heading' | t }}</h3>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
+    <nav class="footer__nav">
+      {% for link in section.settings.studio_menu.links %}
+        <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
       {% endfor %}
-    {% endif %}
+    </nav>
+  </div>
+
+  <div class="footer__column">
+    <h3 class="footer__heading">{{ 'footer.legal.heading' | t }}</h3>
+
+    <nav class="footer__nav">
+      {% for link in section.settings.legal_menu.links %}
+        <a href="{{ link.url }}" class="footer__link">{{ link.title }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+
+  <div class="footer__column">
+    <h3 class="footer__heading">{{ 'footer.newsletter.heading' | t }}</h3>
+
+    {% form 'customer', id: 'FooterNewsletterForm', class: 'footer__newsletter-form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+
+      <div class="footer__newsletter-field">
+        <label for="FooterNewsletterEmail-{{ section.id }}" class="footer__visually-hidden">
+          {{ 'footer.newsletter.email_label' | t }}
+        </label>
+
+        <input
+          type="email"
+          id="FooterNewsletterEmail-{{ section.id }}"
+          name="contact[email]"
+          class="footer__newsletter-input"
+          value="{{ form.email }}"
+          placeholder="{{ 'footer.newsletter.email_placeholder' | t }}"
+          autocomplete="email"
+          required
+        >
+
+        <button type="submit" class="footer__newsletter-submit" aria-label="{{ 'footer.newsletter.submit' | t }}">
+          &rarr;
+        </button>
+      </div>
+
+      {% if form.posted_successfully? %}
+        <p class="footer__newsletter-message">{{ 'footer.newsletter.success' | t }}</p>
+      {% elsif form.errors %}
+        <p class="footer__newsletter-message footer__newsletter-message--error">
+          {{ form.errors.messages['email'] }}
+        </p>
+      {% endif %}
+    {% endform %}
+  </div>
+
+  <div class="footer__column">
+    <p class="footer__copyright">
+      &copy;
+      {{ 'now' | date: '%Y' }}
+      {{ shop.name | link_to: routes.root_url }}
+    </p>
+
+    {% form 'localization', id: 'FooterLocalizationForm', class: 'footer__localization-form' %}
+      <label for="FooterCountry-{{ section.id }}" class="footer__visually-hidden">
+        {{ 'footer.localization.country_label' | t }}
+      </label>
+
+      <select
+        id="FooterCountry-{{ section.id }}"
+        name="country_code"
+        class="footer__country-select"
+        onchange="this.form.submit()"
+      >
+        {{ country_option_tags }}
+      </select>
+
+      <noscript>
+        <button type="submit" class="footer__country-submit">{{ 'footer.localization.submit' | t }}</button>
+      </noscript>
+    {% endform %}
   </div>
 </footer>
 
 {% stylesheet %}
   footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-top: 4rem;
+    padding-block: 2rem;
   }
+
   footer a {
     text-decoration: none;
     color: var(--color-foreground);
   }
-  footer .footer__links,
-  footer .footer__payment {
+
+  .footer__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .footer__heading {
+    font-size: var(--font-size-base);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-slate-600);
+    font-weight: 400;
+    margin-bottom: 1em;
+  }
+
+  .footer__nav {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.75em;
+  }
+
+  .footer__link {
+    font-size: var(--font-size-base);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  .footer__newsletter-field {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5em;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .footer__newsletter-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    padding: 0.5em 0;
+    font-size: var(--font-size-base);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-foreground);
+  }
+
+  .footer__newsletter-input::placeholder {
+    color: var(--color-slate-400);
+  }
+
+  footer .footer__newsletter-submit {
+    border: none;
+    background: transparent;
+    padding: 0.5em 0;
+    color: var(--color-foreground);
+    font-size: var(--font-size-base);
+    line-height: 1;
+  }
+
+  .footer__newsletter-message {
+    margin-top: 0.75em;
+    font-size: var(--font-size-base);
+    color: var(--color-slate-600);
+  }
+
+  .footer__newsletter-message--error {
+    color: var(--color-foreground);
+  }
+
+  .footer__copyright {
+    font-size: var(--font-size-base);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-slate-600);
+    margin-bottom: 1em;
+  }
+
+  .footer__localization-form {
+    display: inline-block;
+  }
+
+  .footer__country-select {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: var(--font-size-base);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-slate-600);
+    cursor: pointer;
+  }
+
+  footer .footer__country-submit {
+    border: none;
+    background: transparent;
+    padding: 0.25em 0;
+    font-size: var(--font-size-base);
+    color: var(--color-slate-600);
+  }
+
+  @media screen and (max-width: 749px) {
+    footer {
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: 3rem;
+    }
   }
 {% endstylesheet %}
 
@@ -43,14 +217,13 @@
   "settings": [
     {
       "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "id": "studio_menu",
+      "label": "t:labels.studio_menu"
     },
     {
-      "type": "checkbox",
-      "id": "show_payment_icons",
-      "label": "t:labels.show_payment_icons",
-      "default": true
+      "type": "link_list",
+      "id": "legal_menu",
+      "label": "t:labels.legal_menu"
     }
   ]
 }

@@ -19,6 +19,25 @@
     "update": "Update",
     "remove": "Remove"
   },
+  "footer": {
+    "studio": {
+      "heading": "Studio"
+    },
+    "legal": {
+      "heading": "Legal"
+    },
+    "newsletter": {
+      "heading": "Join the studio",
+      "email_label": "Email address",
+      "email_placeholder": "Email address",
+      "submit": "Subscribe",
+      "success": "Thank you for subscribing."
+    },
+    "localization": {
+      "country_label": "Country/region",
+      "submit": "Update"
+    }
+  },
   "customers": {
     "login": {
       "email": "Email",
