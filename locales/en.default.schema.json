@@ -19,6 +19,7 @@
     "header": "Header",
     "layout": "Layout",
     "main": "Main",
+    "mega_menu": "Mega menu",
     "page": "Page",
     "password": "Password",
     "primary": "Primary",
@@ -43,6 +44,11 @@
     "layout_direction": "Layout direction",
     "menu": "Menu",
     "customer_account_menu": "Customer account menu",
+    "menu_item_title": "Matching menu item title",
+    "menu_item_title_info": "Must exactly match the title of a top-level menu item that has sub-links",
+    "featured_image": "Featured image",
+    "featured_link": "Featured link",
+    "featured_heading": "Featured heading",
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
@@ -72,6 +78,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }

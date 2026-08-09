@@ -1,0 +1,122 @@
+{% doc %}
+  Renders a full-width mega menu panel for a top-level navigation link.
+
+  Splits the link's nested links into up to 3 text columns, plus an
+  optional 4th column with a 2:3 featured media card.
+
+  @param {object} link - A top-level link from a linklist, with nested `link.links`
+  @param {object} [media_block] - An optional section block providing the featured card (image, image_url, image_heading settings)
+
+  @example
+  {% render 'header-mega-menu', link: link, media_block: media_block %}
+{% enddoc %}
+
+{% liquid
+  assign sub_links = link.links
+  assign column_count = 3
+  assign links_per_column = sub_links.size | divided_by: column_count | ceil
+  assign links_per_column = links_per_column | at_least: 1
+%}
+
+<div class="mega-menu">
+  <div class="mega-menu__grid">
+    {% for i in (1..column_count) %}
+      {% liquid
+        assign start = i | minus: 1 | times: links_per_column
+        assign end = start | plus: links_per_column
+      %}
+      <div class="mega-menu__column">
+        {% for sub_link in sub_links %}
+          {% assign sub_index = forloop.index0 %}
+          {% if sub_index >= start and sub_index < end %}
+            <a href="{{ sub_link.url }}" class="mega-menu__link">{{ sub_link.title }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <div class="mega-menu__featured">
+      {% if media_block %}
+        {% render 'image',
+          image: media_block.settings.image,
+          url: media_block.settings.image_url,
+          class: 'mega-menu__featured-image'
+        %}
+        {% if media_block.settings.image_heading != blank %}
+          <a href="{{ media_block.settings.image_url | default: link.url }}" class="mega-menu__link mega-menu__featured-heading">
+            {{ media_block.settings.image_heading }}
+          </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100vw;
+    background: #FFFFFF;
+    color: #000000;
+    border: none;
+    box-shadow: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .header__nav-item:hover .mega-menu,
+  .header__nav-item:focus-within .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mega-menu__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) minmax(280px, 1fr);
+    gap: 4rem;
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 4rem var(--page-margin);
+  }
+
+  .mega-menu__column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .mega-menu__link {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #000000;
+    border: none;
+  }
+
+  .mega-menu__featured {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+    justify-self: end;
+    width: 100%;
+  }
+
+  .mega-menu__featured-image {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+  }
+
+  .mega-menu__featured-heading {
+    text-align: right;
+  }
+{% endstylesheet %}

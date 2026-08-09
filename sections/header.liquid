@@ -3,11 +3,34 @@
     {{ shop.name | link_to: routes.root_url }}
   </h2>
 
-  <div class="header__menu">
+  <nav class="header__menu">
     {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
+      {% liquid
+        assign media_block = blank
+        for block in section.blocks
+          if block.settings.menu_title == link.title
+            assign media_block = block
+          endif
+        endfor
+      %}
+
+      <div class="header__nav-item">
+        <a
+          href="{{ link.url }}"
+          class="header__nav-link"
+          {% if link.links.size > 0 %}
+            aria-haspopup="true"
+          {% endif %}
+        >
+          {{ link.title }}
+        </a>
+
+        {% if link.links.size > 0 %}
+          {% render 'header-mega-menu', link: link, media_block: media_block %}
+        {% endif %}
+      </div>
     {% endfor %}
-  </div>
+  </nav>
 
   <div class="header__icons">
     {% if shop.customer_accounts_enabled %}
@@ -28,6 +51,7 @@
 
 {% stylesheet %}
   header {
+    position: relative;
     height: 5rem;
     display: flex;
     align-items: center;
@@ -55,6 +79,19 @@
     display: flex;
     gap: 1rem;
   }
+
+  .header__nav-item {
+    position: static;
+    display: flex;
+    align-items: center;
+  }
+
+  .header__nav-link {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -71,6 +108,35 @@
       "id": "customer_account_menu",
       "label": "t:labels.customer_account_menu",
       "default": "customer-account-main-menu"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "t:general.mega_menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "t:labels.menu_item_title",
+          "info": "t:labels.menu_item_title_info"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.featured_image"
+        },
+        {
+          "type": "url",
+          "id": "image_url",
+          "label": "t:labels.featured_link"
+        },
+        {
+          "type": "text",
+          "id": "image_heading",
+          "label": "t:labels.featured_heading"
+        }
+      ]
     }
   ]
 }
