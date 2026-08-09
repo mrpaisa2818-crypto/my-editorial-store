@@ -1,6 +1,6 @@
 <header class="header" data-transparent="{{ section.settings.transparent }}" data-text-color="{{ section.settings.text_color }}">
-  <div class="header__row-top">
-    <div class="header__start">
+  <div class="header-top-bar">
+    <div class="header-top-bar__spacer">
       <button
         type="button"
         class="header__menu-toggle"
@@ -15,11 +15,11 @@
       </button>
     </div>
 
-    <h2 class="header__title">
+    <h2 class="header-top-bar__brand">
       <a href="{{ routes.root_url }}" class="header__brand">{{ 'general.brand_name' | t }}</a>
     </h2>
 
-    <div class="header__icons">
+    <div class="header-top-bar__utilities">
       <button
         type="button"
         class="header__search-toggle"
@@ -47,33 +47,35 @@
     </div>
   </div>
 
-  <nav class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {% liquid
-        assign media_block = blank
-        for block in section.blocks
-          if block.settings.menu_title == link.title
-            assign media_block = block
-          endif
-        endfor
-      %}
+  <nav class="header-navigation-bar">
+    <ul class="header-navigation-bar__list">
+      {% for link in section.settings.menu.links %}
+        {% liquid
+          assign media_block = blank
+          for block in section.blocks
+            if block.settings.menu_title == link.title
+              assign media_block = block
+            endif
+          endfor
+        %}
 
-      <div class="header__nav-item">
-        <a
-          href="{{ link.url }}"
-          class="header__nav-link"
+        <li class="header__nav-item">
+          <a
+            href="{{ link.url }}"
+            class="header__nav-link"
+            {% if link.links.size > 0 %}
+              aria-haspopup="true"
+            {% endif %}
+          >
+            {{ link.title }}
+          </a>
+
           {% if link.links.size > 0 %}
-            aria-haspopup="true"
+            {% render 'header-mega-menu', link: link, media_block: media_block %}
           {% endif %}
-        >
-          {{ link.title }}
-        </a>
-
-        {% if link.links.size > 0 %}
-          {% render 'header-mega-menu', link: link, media_block: media_block %}
-        {% endif %}
-      </div>
-    {% endfor %}
+        </li>
+      {% endfor %}
+    </ul>
   </nav>
 </header>
 
@@ -124,27 +126,47 @@
     color: inherit;
   }
 
-  .header__row-top {
+  .header-top-bar {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    column-gap: 1rem;
-    height: 5rem;
+    padding: 1.5rem 2rem 0.5rem;
   }
 
-  .header__start {
+  .header-top-bar__spacer {
+    grid-column: 1;
+  }
+
+  .header-top-bar__brand {
+    grid-column: 2;
+    margin: 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+  }
+
+  .header-top-bar__utilities {
+    grid-column: 3;
     display: flex;
-    align-items: center;
-    justify-self: start;
-    min-width: 0;
+    justify-content: flex-end;
+    gap: 1.25rem;
   }
 
-  .header__menu {
+  .header-navigation-bar {
     display: flex;
     justify-content: center;
-    align-items: center;
+    width: 100%;
+    padding: 0.75rem 0 1.25rem;
+  }
+
+  .header-navigation-bar__list {
+    display: flex;
     gap: 2.5rem;
-    padding-top: 1rem;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
   .header__menu-toggle {
@@ -167,26 +189,9 @@
     background-color: currentColor;
   }
 
-  .header__title {
-    grid-column: 2;
-    margin: 0;
-    justify-self: center;
-  }
-
   .header__brand {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.35em;
     text-transform: uppercase;
-    text-align: center;
     margin: 0;
-  }
-
-  .header__icons {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    justify-self: end;
   }
 
   .header__search-toggle {
@@ -216,11 +221,12 @@
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: #000000;
     border: none;
   }
 
   @media (max-width: 767px) {
-    .header__menu {
+    .header-navigation-bar {
       display: none;
     }
 
