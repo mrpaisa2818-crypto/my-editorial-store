@@ -1,6 +1,6 @@
 <header>
   <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
+    <a href="{{ routes.root_url }}" class="header__brand">{{ 'general.brand_name' | t }}</a>
   </h2>
 
   <nav class="header__menu">
@@ -105,8 +105,16 @@
   }
 
   .header__search-toggle svg {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
+    --icon-stroke-width: 1.5;
+  }
+
+  .header__brand {
+    font-size: 13px;
+    letter-spacing: 0.4em;
+    font-weight: 500;
+    text-transform: uppercase;
   }
 
   .header__nav-item {
