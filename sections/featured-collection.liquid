@@ -12,14 +12,18 @@
     <div class="featured-collection__grid">
       {% for product in section.settings.collection.products limit: section.settings.products_to_show %}
         <div class="featured-collection__item">
-          {% render 'image',
-            class: 'featured-collection__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 800,
-            height: 1200,
-            crop: 'center'
-          %}
+          {% if product.featured_image != blank %}
+            {% render 'image',
+              class: 'featured-collection__image',
+              image: product.featured_image,
+              url: product.url,
+              width: 800,
+              height: 1200,
+              crop: 'center'
+            %}
+          {% else %}
+            {{ 'image' | placeholder_svg_tag: 'featured-collection__image placeholder-svg' }}
+          {% endif %}
 
           <div class="featured-collection__info">
             <a href="{{ product.url }}" class="featured-collection__product-title">

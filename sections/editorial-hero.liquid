@@ -5,13 +5,17 @@
 
 <div class="editorial-hero full-width">
   <div class="editorial-hero__media">
-    {% render 'image',
-      class: 'editorial-hero__image',
-      image: section.settings.image,
-      width: 1600,
-      height: 2400,
-      crop: 'center'
-    %}
+    {% if section.settings.image != blank %}
+      {% render 'image',
+        class: 'editorial-hero__image',
+        image: section.settings.image,
+        width: 1600,
+        height: 2400,
+        crop: 'center'
+      %}
+    {% else %}
+      {{ 'image' | placeholder_svg_tag: 'editorial-hero__image placeholder-svg' }}
+    {% endif %}
   </div>
 
   <div class="editorial-hero__content">

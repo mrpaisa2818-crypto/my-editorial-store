@@ -45,7 +45,9 @@
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {% if image != blank %}
+    {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {% endif %}
 </{{ wrapper }}>
 
 {% stylesheet %}
