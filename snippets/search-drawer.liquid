@@ -1,0 +1,109 @@
+{% doc %}
+  Renders a minimal slide-out search overlay, opened via a trigger button
+  that references this drawer's `id` through `aria-controls`.
+
+  @param {string} id - Unique id for the dialog element.
+
+  @example
+  {% render 'search-drawer', id: 'SearchDrawer' %}
+{% enddoc %}
+
+<dialog id="{{ id }}" class="search-drawer" scroll-lock>
+  <div class="search-drawer__panel">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-drawer__form">
+      <input
+        type="search"
+        name="q"
+        class="search-drawer__input"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+        autofocus
+      >
+    </form>
+
+    <button type="button" class="search-drawer__close" data-search-drawer-close>
+      {{ 'search.close' | t }}
+    </button>
+  </div>
+</dialog>
+
+{% stylesheet %}
+  .search-drawer {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    margin: 0;
+    border: none;
+    padding: 0;
+    background-color: #ffffff;
+    color: #000000;
+  }
+
+  .search-drawer::backdrop {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .search-drawer__panel {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 2rem var(--page-margin);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .search-drawer__form {
+    flex: 1;
+  }
+
+  .search-drawer__input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    background: transparent;
+    padding: 0.5em 0;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: #000000;
+  }
+
+  .search-drawer__input::placeholder {
+    color: var(--color-slate-400);
+  }
+
+  .search-drawer__close {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #000000;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('click', (event) => {
+    const opener = event.target.closest('[data-search-drawer-open]');
+    if (opener) {
+      const drawer = document.getElementById(opener.getAttribute('aria-controls'));
+      if (drawer) drawer.showModal();
+    }
+
+    const closer = event.target.closest('[data-search-drawer-close]');
+    if (closer) {
+      closer.closest('dialog')?.close();
+    }
+
+    const drawer = event.target.closest('dialog.search-drawer');
+    if (drawer && event.target === drawer) {
+      drawer.close();
+    }
+  });
+{% endjavascript %}

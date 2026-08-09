@@ -33,6 +33,17 @@
   </nav>
 
   <div class="header__icons">
+    <button
+      type="button"
+      class="header__search-toggle"
+      data-search-drawer-open
+      aria-haspopup="dialog"
+      aria-controls="SearchDrawer-{{ section.id }}"
+      aria-label="{{ 'search.title' | t }}"
+    >
+      {{ 'icon-search.svg' | inline_asset_content }}
+    </button>
+
     {% if shop.customer_accounts_enabled %}
       <shopify-account menu="{{ section.settings.customer_account_menu }}">
         {{ 'icon-account.svg' | inline_asset_content }}
@@ -48,6 +59,8 @@
     </a>
   </div>
 </header>
+
+{% render 'search-drawer', id: 'SearchDrawer-' | append: section.id %}
 
 {% stylesheet %}
   header {
@@ -78,6 +91,22 @@
   header .header__icons {
     display: flex;
     gap: 1rem;
+  }
+
+  .header__search-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    color: var(--color-foreground);
+    cursor: pointer;
+  }
+
+  .header__search-toggle svg {
+    width: 16px;
+    height: 16px;
   }
 
   .header__nav-item {
