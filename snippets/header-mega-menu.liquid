@@ -87,7 +87,6 @@
     visibility: hidden;
     transform: translateY(-8px);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-    transition-delay: 0.1s;
     pointer-events: none;
     z-index: 10;
   }
@@ -101,14 +100,12 @@
     height: 20px;
   }
 
-  .header__nav-item:hover .mega-menu,
-  .header__nav-item:focus-within .mega-menu,
-  .mega-menu:hover {
+  .header__nav-item.is-open .mega-menu,
+  .header__nav-item:focus-within .mega-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
     pointer-events: auto;
-    transition-delay: 0s;
   }
 
   .mega-menu__grid {

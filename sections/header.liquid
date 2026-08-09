@@ -65,6 +65,7 @@
             class="header__nav-link"
             {% if link.links.size > 0 %}
               aria-haspopup="true"
+              aria-expanded="false"
             {% endif %}
           >
             {{ link.title }}
@@ -81,6 +82,87 @@
 
 {% render 'search-drawer', id: 'SearchDrawer-' | append: section.id %}
 {% render 'mobile-menu', id: 'MobileMenu-' | append: section.id, menu: section.settings.menu %}
+
+{% javascript %}
+  (function () {
+    const DESKTOP_QUERY = '(min-width: 768px)';
+    const CLOSE_DELAY = 150;
+    const desktopQuery = window.matchMedia(DESKTOP_QUERY);
+    const closeTimers = new WeakMap();
+    let bound = false;
+
+    function setExpanded(item, expanded) {
+      const trigger = item.querySelector('.header__nav-link[aria-haspopup="true"]');
+      if (trigger) trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    }
+
+    function openItem(item) {
+      const timer = closeTimers.get(item);
+      if (timer) {
+        clearTimeout(timer);
+        closeTimers.delete(item);
+      }
+      item.classList.add('is-open');
+      setExpanded(item, true);
+    }
+
+    function scheduleClose(item) {
+      const timer = closeTimers.get(item);
+      if (timer) clearTimeout(timer);
+      closeTimers.set(
+        item,
+        setTimeout(() => {
+          item.classList.remove('is-open');
+          setExpanded(item, false);
+          closeTimers.delete(item);
+        }, CLOSE_DELAY)
+      );
+    }
+
+    function handleEnter(event) {
+      openItem(event.currentTarget);
+    }
+
+    function handleLeave(event) {
+      scheduleClose(event.currentTarget);
+    }
+
+    function bindDesktopHover() {
+      if (bound) return;
+      document.querySelectorAll('.header__nav-item').forEach((item) => {
+        if (!item.querySelector('.mega-menu')) return;
+        item.addEventListener('mouseenter', handleEnter);
+        item.addEventListener('mouseleave', handleLeave);
+      });
+      bound = true;
+    }
+
+    function unbindDesktopHover() {
+      if (!bound) return;
+      document.querySelectorAll('.header__nav-item').forEach((item) => {
+        item.removeEventListener('mouseenter', handleEnter);
+        item.removeEventListener('mouseleave', handleLeave);
+        const timer = closeTimers.get(item);
+        if (timer) clearTimeout(timer);
+        closeTimers.delete(item);
+        item.classList.remove('is-open');
+        setExpanded(item, false);
+      });
+      bound = false;
+    }
+
+    function syncHoverBinding(mediaQueryEvent) {
+      if (mediaQueryEvent.matches) {
+        bindDesktopHover();
+      } else {
+        unbindDesktopHover();
+      }
+    }
+
+    syncHoverBinding(desktopQuery);
+    desktopQuery.addEventListener('change', syncHoverBinding);
+  })();
+{% endjavascript %}
 
 {% stylesheet %}
   .header {
